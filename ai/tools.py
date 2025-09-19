@@ -3,7 +3,7 @@ from typing import Dict
 import db.database as db
 
 # ============================
-# Tool: Add Event
+# Create: Add Event
 # ============================
 def add_event_tool(title, date, start_time=None, end_time=None, user="user_shreya"):
     try:
@@ -17,7 +17,7 @@ def add_event_tool(title, date, start_time=None, end_time=None, user="user_shrey
         return {"success": False, "message": f"❌ Could not add event: {e}", "events": []}
 
 # ============================
-# Tool: List ALL Events
+# Read: List Events
 # ============================
 def list_all_events_tool(user: str = "user_shreya") -> Dict:
     events = db.list_all_events(user=user)
@@ -30,9 +30,6 @@ def list_all_events_tool(user: str = "user_shreya") -> Dict:
     ]
     return {"success": True, "message": "\n".join(lines), "events": events}
 
-# ============================
-# Tool: List Events on Date
-# ============================
 def list_events_on_date_tool(date: str, user: str = "user_shreya") -> Dict:
     events = db.list_events_on_date(date, user=user)
     if not events:
@@ -44,9 +41,6 @@ def list_events_on_date_tool(date: str, user: str = "user_shreya") -> Dict:
     ]
     return {"success": True, "message": "\n".join(lines), "events": events}
 
-# ============================
-# Tool: List Events by Title
-# ============================
 def list_events_by_title_tool(title: str, user: str = "user_shreya") -> Dict:
     events = db.list_events_by_title(title, user=user)
     if not events:
@@ -58,9 +52,6 @@ def list_events_by_title_tool(title: str, user: str = "user_shreya") -> Dict:
     ]
     return {"success": True, "message": "\n".join(lines), "events": events}
 
-# ============================
-# Tool: List Next N Days
-# ============================
 def list_events_next_n_days_tool(n: int, user: str = "user_shreya") -> Dict:
     events = db.list_events_next_n_days(n, user=user)
     if not events:
@@ -71,8 +62,24 @@ def list_events_next_n_days_tool(n: int, user: str = "user_shreya") -> Dict:
     ]
     return {"success": True, "events": events, "message": "\n".join(lines)}
 
+def list_events_by_keyword_tool(keyword: str, user: str = "user_shreya") -> Dict:
+    """
+    Returns all events whose title contains the given keyword.
+    """
+    events = db.list_all_events(user=user)
+    filtered = [ev for ev in events if keyword.lower() in ev['title'].lower()]
+    
+    if not filtered:
+        return {"success": True, "message": f"📭 No events found with keyword '{keyword}'", "events": []}
+    
+    lines = [
+        f"[{ev['id']}] {ev['title']} on {ev['date']} {ev['start_time'] or ''}-{ev['end_time'] or ''}"
+        for ev in filtered
+    ]
+    return {"success": True, "message": "\n".join(lines), "events": filtered}
+
 # ============================
-# Tool: Update Event
+# Update: Update Event
 # ============================
 def update_event_tool(event_id: int, title: str = None, date: str = None,
                       start_time: str = None, end_time: str = None, user: str = "user_shreya") -> Dict:
@@ -86,7 +93,7 @@ def update_event_tool(event_id: int, title: str = None, date: str = None,
         return {"success": False, "message": f"❌ Could not update event: {e}"}
 
 # ============================
-# Tool: Delete Event
+# Delete: Delete Event
 # ============================
 def delete_event_tool(event_id: int, user: str = "user_shreya") -> Dict:
     success = db.delete_event(event_id, user=user)
@@ -111,25 +118,6 @@ def delete_all_events_tool(user: str = "user_shreya") -> dict:
         return {"success": True, "message": f"All events for {user} deleted successfully."}
     except Exception as e:
         return {"success": False, "message": str(e)}
-# ============================
-# Tool: List Events by Keyword
-# ============================
-def list_events_by_keyword_tool(keyword: str, user: str = "user_shreya") -> Dict:
-    """
-    Returns all events whose title contains the given keyword.
-    """
-    events = db.list_all_events(user=user)
-    filtered = [ev for ev in events if keyword.lower() in ev['title'].lower()]
-    
-    if not filtered:
-        return {"success": True, "message": f"📭 No events found with keyword '{keyword}'", "events": []}
-    
-    lines = [
-        f"[{ev['id']}] {ev['title']} on {ev['date']} {ev['start_time'] or ''}-{ev['end_time'] or ''}"
-        for ev in filtered
-    ]
-    return {"success": True, "message": "\n".join(lines), "events": filtered}
-
 
 # ============================
 # TOOL MAPPING

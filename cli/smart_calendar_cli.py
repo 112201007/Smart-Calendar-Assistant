@@ -3,6 +3,7 @@ import click
 import db.database as db
 import logs.log_convo as log_convo
 from datetime import datetime
+
 # Load previous conversation memory - ensures memory.json is read once when the CLI starts
 conversation_memory = log_convo.get_history()
 

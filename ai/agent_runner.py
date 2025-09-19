@@ -9,25 +9,39 @@ from datetime import datetime
 
 from langchain.agents import Tool, initialize_agent, AgentType
 from langchain_google_genai import ChatGoogleGenerativeAI
+
 from dotenv import load_dotenv
 
 # Load env vars
 load_dotenv()
 
-import os
-import inspect
-import re
-from ai.tools import TOOL_MAPPING
-from logs.log_convo import add_message
-import dateparser
-from datetime import datetime
 
-from langchain.agents import Tool, initialize_agent, AgentType
-from langchain_google_genai import ChatGoogleGenerativeAI
-from dotenv import load_dotenv
+# ==============================
+# Build LangChain Tools
+# ==============================
+lc_tools = [make_tool(name, fn) for name, fn in TOOL_MAPPING.items()]
 
-# Load env vars
-load_dotenv()
+
+# ==============================
+# Initialize Gemini LLM (LangChain wrapper)
+# ==============================
+llm = ChatGoogleGenerativeAI(
+    model="gemini-1.5-flash",
+    google_api_key=os.getenv("GEMINI_API_KEY"),
+    temperature=0,
+)
+
+
+# ==============================
+# Create LangChain Agent
+# ==============================
+agent = initialize_agent(
+    tools=lc_tools,
+    llm=llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=True,
+)
+
 
 def make_tool(name, fn):
     sig = inspect.signature(fn)
@@ -92,34 +106,6 @@ def make_tool(name, fn):
             f"Always call with explicit args, e.g. title='Meeting', date='2025-09-20', start_time='10:00'."
         ),
     )
-
-
-# ==============================
-# Build LangChain Tools
-# ==============================
-lc_tools = [make_tool(name, fn) for name, fn in TOOL_MAPPING.items()]
-
-
-# ==============================
-# Initialize Gemini LLM (LangChain wrapper)
-# ==============================
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
-    google_api_key=os.getenv("GEMINI_API_KEY"),
-    temperature=0,
-)
-
-
-# ==============================
-# Create LangChain Agent
-# ==============================
-agent = initialize_agent(
-    tools=lc_tools,
-    llm=llm,
-    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-    verbose=True,
-)
-
 
 # ==============================
 # Run Agent Function

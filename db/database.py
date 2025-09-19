@@ -106,7 +106,7 @@ def update_event(event_id: int, title: str = None, date: str = None,
     return updated
 
 # -------------------------------
-# DELETE, LIST ALL, LIST BY DATE/TITLE/NEXT N DAYS
+# DELETE EVENT
 # -------------------------------
 def delete_event(event_id: int, user: str = "user_shreya") -> bool:
     conn = sqlite3.connect(DB_NAME)
@@ -130,6 +130,25 @@ def delete_event_by_title(title: str, user: str = "user_shreya") -> bool:
     conn.close()
     return deleted
 
+def delete_all_events(user: str = None):
+    """
+    Delete all events from the database.
+    If user is provided, only delete events for that user.
+    """
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    
+    if user:
+        cursor.execute("DELETE FROM events WHERE user = ?", (user,))
+    else:
+        cursor.execute("DELETE FROM events")  # delete all events
+
+    conn.commit()
+    conn.close()
+    return True
+# -------------------------------
+# LIST ALL, LIST BY DATE/TITLE/NEXT N DAYS
+# -------------------------------
 
 def list_all_events(user: str = "user_shreya") -> list:
     conn = sqlite3.connect(DB_NAME)
@@ -170,21 +189,6 @@ def list_events_by_title(title: str, user: str = "user_shreya") -> list:
     conn.close()
     return [dict(zip(["id","user","title","date","start_time","end_time"], r)) for r in rows]
 
-# def list_events_next_n_days(n: int, user: str = "user_shreya") -> list:
-#     today = datetime.today().date()
-#     end_date = today + timedelta(days=n)
-#     conn = sqlite3.connect(DB_NAME)
-#     cur = conn.cursor()
-#     cur.execute("""
-#         SELECT id, user, title, date, start_time, end_time
-#         FROM events
-#         WHERE user=? AND date<=?
-#         ORDER BY date ASC, start_time ASC
-#     """, (user, str(end_date)))
-#     rows = cur.fetchall()
-#     conn.close()
-#     return [dict(zip(["id","user","title","date","start_time","end_time"], r)) for r in rows]
-
 def list_events_next_n_days(n: int, user: str = "user_shreya") -> list:
     """
     Returns all events for the given user within the next `n` days, inclusive.
@@ -213,21 +217,6 @@ def list_events_next_n_days(n: int, user: str = "user_shreya") -> list:
         dict(zip(["id", "user", "title", "date", "start_time", "end_time"], row))
         for row in rows
     ]
-def delete_all_events(user: str = None):
-    """
-    Delete all events from the database.
-    If user is provided, only delete events for that user.
-    """
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    
-    if user:
-        cursor.execute("DELETE FROM events WHERE user = ?", (user,))
-    else:
-        cursor.execute("DELETE FROM events")  # delete all events
 
-    conn.commit()
-    conn.close()
-    return True
 # Ensure DB exists
 init_db()

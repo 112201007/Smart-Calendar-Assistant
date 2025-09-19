@@ -31,7 +31,39 @@ User Input
    ├── CLI Input → smart_calendar_cli.py → db/database.py / logs/log_convo.py
    │
    └── AI Input → test_agent.py → agent_runner.py → tools.py → db/database.py → logs/log_convo.py
+                        │
+                        └─> LangChain Agent + LLM (Gemini)
 ```
+
+# Memory Storage & Retrieval
+- Stored as a JSON list of messages with timestamp, role (user/assistant), and message.
+- log_convo.add_message() appends new messages.
+- get_history() retrieves full conversation.
+
+# Tool Definition & Registration with LLM
+- TOOL_MAPPING maps tool names to functions in tools.py.
+- make_tool() wraps each function into a LangChain Tool object with signature inspection and argument parsing.
+- All tools are registered with the LangChain agent (initialize_agent) to allow natural language execution.
+- Tools: 
+```
+-Event Creation:
+   add_event_tool
+
+-Event Retrieval: 
+   list_all_events_tool
+   list_events_on_date_tool
+   list_events_by_title_tool
+   list_events_next_n_days_tool
+
+-Event Modification:
+   update_event_tool
+   
+-Event Deletion:
+   delete_event_tool
+   delete_event_by_title_tool
+   delete_all_events_tool
+```
+
 
 # File Interactions
 
@@ -113,7 +145,10 @@ python cli/smart_calendar_cli.py show-memory
 - **Conversation memory**: All interactions logged to memory.json
 - **SQLite persistence**: All events saved in calendar.db
 
-# Future Work
-- Extend AI tools and CLI to fully support multi-user events
+# Future Improvements
+- Extend AI tools and CLI to support multi-user events
+
 - Improve tool handling and argument parsing in AI agent
 - Enhance natural language understanding for complex queries
+- Better AI feedback messages and error handling, formatting.
+- Enhanced natural language understanding (multi-event parsing, fuzzy matching) for CLI

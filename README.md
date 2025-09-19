@@ -152,3 +152,4 @@ python cli/smart_calendar_cli.py show-memory
 - Enhance natural language understanding for complex queries
 - Better AI feedback messages and error handling, formatting.
 - Enhanced natural language understanding (multi-event parsing, fuzzy matching) for CLI
+- Explore and integrate LangGraph

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 DB_NAME = "calendar.db"
 
+
 def init_db():
     """
     Initialize the SQLite database and create the events table if not exists.
@@ -24,6 +25,7 @@ def init_db():
     """)
     conn.commit()
     conn.close()
+
 
 # -------------------------------
 # ADD EVENT
@@ -54,6 +56,7 @@ def add_event(title: str, date: str, start_time: str = None, end_time: str = Non
         "start_time": start_time,
         "end_time": end_time
     }
+
 
 # -------------------------------
 # UPDATE EVENT
@@ -105,6 +108,7 @@ def update_event(event_id: int, title: str = None, date: str = None,
     conn.close()
     return updated
 
+
 # -------------------------------
 # DELETE EVENT
 # -------------------------------
@@ -116,6 +120,7 @@ def delete_event(event_id: int, user: str = "user_shreya") -> bool:
     deleted = cur.rowcount > 0
     conn.close()
     return deleted
+
 
 def delete_event_by_title(title: str, user: str = "user_shreya") -> bool:
     """
@@ -130,6 +135,7 @@ def delete_event_by_title(title: str, user: str = "user_shreya") -> bool:
     conn.close()
     return deleted
 
+
 def delete_all_events(user: str = None):
     """
     Delete all events from the database.
@@ -137,7 +143,7 @@ def delete_all_events(user: str = None):
     """
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    
+
     if user:
         cursor.execute("DELETE FROM events WHERE user = ?", (user,))
     else:
@@ -146,10 +152,11 @@ def delete_all_events(user: str = None):
     conn.commit()
     conn.close()
     return True
+
+
 # -------------------------------
 # LIST ALL, LIST BY DATE/TITLE/NEXT N DAYS
 # -------------------------------
-
 def list_all_events(user: str = "user_shreya") -> list:
     conn = sqlite3.connect(DB_NAME)
     cur = conn.cursor()
@@ -161,7 +168,8 @@ def list_all_events(user: str = "user_shreya") -> list:
     """, (user,))
     rows = cur.fetchall()
     conn.close()
-    return [dict(zip(["id","user","title","date","start_time","end_time"], r)) for r in rows]
+    return [dict(zip(["id", "user", "title", "date", "start_time", "end_time"], r)) for r in rows]
+
 
 def list_events_on_date(date: str, user: str = "user_shreya") -> list:
     conn = sqlite3.connect(DB_NAME)
@@ -174,7 +182,8 @@ def list_events_on_date(date: str, user: str = "user_shreya") -> list:
     """, (user, date))
     rows = cur.fetchall()
     conn.close()
-    return [dict(zip(["id","user","title","date","start_time","end_time"], r)) for r in rows]
+    return [dict(zip(["id", "user", "title", "date", "start_time", "end_time"], r)) for r in rows]
+
 
 def list_events_by_title(title: str, user: str = "user_shreya") -> list:
     conn = sqlite3.connect(DB_NAME)
@@ -187,7 +196,8 @@ def list_events_by_title(title: str, user: str = "user_shreya") -> list:
     """, (user, title))
     rows = cur.fetchall()
     conn.close()
-    return [dict(zip(["id","user","title","date","start_time","end_time"], r)) for r in rows]
+    return [dict(zip(["id", "user", "title", "date", "start_time", "end_time"], r)) for r in rows]
+
 
 def list_events_next_n_days(n: int, user: str = "user_shreya") -> list:
     """
@@ -217,6 +227,7 @@ def list_events_next_n_days(n: int, user: str = "user_shreya") -> list:
         dict(zip(["id", "user", "title", "date", "start_time", "end_time"], row))
         for row in rows
     ]
+
 
 # Ensure DB exists
 init_db()

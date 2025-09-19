@@ -7,6 +7,7 @@ from datetime import datetime
 # Load previous conversation memory - ensures memory.json is read once when the CLI starts
 conversation_memory = log_convo.get_history()
 
+
 # ==========================================================
 # Utility validators
 # ==========================================================
@@ -19,6 +20,7 @@ def validate_date(ctx, param, value):
     except ValueError:
         raise click.BadParameter("Date must be in YYYY-MM-DD format")
 
+
 def validate_time(ctx, param, value):
     if value is None:
         return None
@@ -28,12 +30,14 @@ def validate_time(ctx, param, value):
     except ValueError:
         raise click.BadParameter("Time must be in HH:MM (24-hour) format")
 
+
 def validate_time_range(start_time, end_time):
     if start_time and end_time:
         t1 = datetime.strptime(start_time, "%H:%M")
         t2 = datetime.strptime(end_time, "%H:%M")
         if t1 > t2:
             raise click.BadParameter("Start time must be earlier than or equal to end time")
+
 
 # ==========================================================
 # CLI Group
@@ -43,12 +47,14 @@ def cli():
     """Smart Calendar CLI"""
     pass
 
+
 # ==========================================================
 # Helper function to log CLI commands and outputs
 # ==========================================================
 def log_cli(user_input: str, output_msg: str):
     log_convo.add_message("user", user_input)
     log_convo.add_message("assistant", output_msg)
+
 
 # ==========================================================
 # CREATE
@@ -76,6 +82,7 @@ def add(title, date, start_time, end_time, user):
         click.echo(error_msg)
         log_cli(user_cmd, error_msg)
 
+
 # ==========================================================
 # READ COMMANDS
 # ==========================================================
@@ -96,6 +103,7 @@ def list_all(user):
         output_msg = "\n".join(output_lines)
     log_cli(user_cmd, output_msg)
 
+
 @cli.command("list-date")
 @click.argument("date", callback=validate_date)
 @click.option("--user", default="user_shreya", help="Username for multi-user support")
@@ -114,6 +122,7 @@ def list_on_date(date, user):
         output_msg = "\n".join(output_lines)
     log_cli(user_cmd, output_msg)
 
+
 @cli.command("list-title")
 @click.argument("title")
 @click.option("--user", default="user_shreya", help="Username for multi-user support")
@@ -131,6 +140,7 @@ def list_by_title(title, user):
             output_lines.append(line)
         output_msg = "\n".join(output_lines)
     log_cli(user_cmd, output_msg)
+
 
 @cli.command("list-next")
 @click.argument("n", type=int)
@@ -155,6 +165,7 @@ def list_next(n, user):
             output_lines.append(line)
         output_msg = "\n".join(output_lines)
     log_cli(user_cmd, output_msg)
+
 
 # ==========================================================
 # UPDATE
@@ -184,6 +195,7 @@ def update(event_id, title, date, start_time, end_time, user):
         click.echo(output_msg)
     log_cli(user_cmd, output_msg)
 
+
 # ==========================================================
 # DELETE
 # ==========================================================
@@ -200,6 +212,7 @@ def delete(event_id, user):
     click.echo(output_msg)
     log_cli(user_cmd, output_msg)
 
+
 # ==========================================================
 # SHOW CONVERSATION MEMORY
 # ==========================================================
@@ -212,6 +225,7 @@ def show_memory():
         return
     for msg in history[-10:]:  # last 10 messages
         click.echo(f"[{msg['timestamp']}] {msg['role']}: {msg['message']}")
+
 
 # ==========================================================
 # AI NATURAL LANGUAGE COMMAND (LangChain agent)
@@ -226,15 +240,9 @@ def ai_command_cli(user_input, user):
     output = run_agent(user_input, user=user)
     click.echo(output)
 
+
 # ==========================================================
 # MAIN
 # ==========================================================
 if __name__ == "__main__":
     cli()
-
-
-
-
-
-
-

@@ -1,30 +1,39 @@
-#log_convo.py
+# log_convo.py
 import json
 from datetime import datetime
 
 MEMORY_FILE = "memory.json"
 
+
 def ensure_memory_exists():
-    """Create memory file if it doesn't exist"""
+    """Create memory file if it doesn't exist or is empty"""
     try:
         with open(MEMORY_FILE, "r") as f:
-            pass
-    except FileNotFoundError:
+            content = f.read().strip()
+            if not content:
+                raise ValueError("Empty file")
+    except (FileNotFoundError, ValueError):
         with open(MEMORY_FILE, "w") as f:
             json.dump([], f)
+
 
 def load_memory() -> list:
     """Load conversation memory from file"""
     try:
         with open(MEMORY_FILE, "r") as f:
-            return json.load(f)
+            content = f.read().strip()
+            if not content:   # handle empty file
+                return []
+            return json.loads(content)
     except FileNotFoundError:
         return []
+
 
 def save_memory(memory: list):
     """Save conversation memory to file"""
     with open(MEMORY_FILE, "w") as f:
         json.dump(memory, f, indent=2)
+
 
 def add_message(role: str, message: str):
     """
@@ -38,6 +47,7 @@ def add_message(role: str, message: str):
         "message": message
     })
     save_memory(memory)
+
 
 def get_history():
     """Return full conversation history"""

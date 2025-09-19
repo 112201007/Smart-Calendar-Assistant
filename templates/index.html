@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Calendar Assistant</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h2 { margin-top: 30px; }
+    textarea, input { width: 100%; margin: 5px 0; padding: 8px; }
+    button { margin: 5px 0; padding: 8px 12px; }
+    .response { margin-top: 10px; padding: 10px; background: #f0f0f0; white-space: pre-wrap; }
+    .form-section { margin-bottom: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Smart Calendar Assistant</h1>
+
+  <!-- AI Agent -->
+  <h2>AI Agent (Natural Language)</h2>
+  <textarea id="aiQuery" placeholder="e.g., Add meeting tomorrow at 3"></textarea><br>
+  <button onclick="runAI()">Run AI Agent</button>
+  <div id="aiResponse" class="response"></div>
+
+  <!-- CLI Commands -->
+  <h2>CLI Commands</h2>
+
+  <!-- Add Event -->
+  <div class="form-section">
+    <h3>Add Event</h3>
+    <input id="addTitle" placeholder="Title (required)">
+    <input id="addDate" placeholder="Date (YYYY-MM-DD)">
+    <input id="addStart" placeholder="Start Time (e.g., 10:00)">
+    <input id="addEnd" placeholder="End Time (e.g., 11:00)">
+    <button onclick="runCLIAdd()">Add Event</button>
+  </div>
+
+  <!-- List Events -->
+  <div class="form-section">
+    <h3>List Events</h3>
+    <input id="listDate" placeholder="Date (optional, YYYY-MM-DD)">
+    <button onclick="runCLIListAll()">List All</button>
+    <button onclick="runCLIListDate()">List by Date</button>
+  </div>
+
+  <!-- Update Event -->
+  <div class="form-section">
+    <h3>Update Event</h3>
+    <input id="updateId" placeholder="Event ID (required)">
+    <input id="updateTitle" placeholder="New Title (optional)">
+    <input id="updateStart" placeholder="New Start Time (optional)">
+    <input id="updateEnd" placeholder="New End Time (optional)">
+    <button onclick="runCLIUpdate()">Update Event</button>
+  </div>
+
+  <!-- Delete Event -->
+  <div class="form-section">
+    <h3>Delete Event</h3>
+    <input id="deleteId" placeholder="Event ID (required)">
+    <button onclick="runCLIDelete()">Delete Event</button>
+  </div>
+
+  <div id="cliResponse" class="response"></div>
+
+  <script>
+    async function runAI() {
+      const query = document.getElementById("aiQuery").value;
+      const res = await fetch("/run_ai", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({query})
+      });
+      const data = await res.json();
+      document.getElementById("aiResponse").textContent = data.response;
+    }
+
+    async function runCLIAdd() {
+      let cmd = `add "${document.getElementById("addTitle").value}" ${document.getElementById("addDate").value}`;
+      if (document.getElementById("addStart").value) cmd += ` --start ${document.getElementById("addStart").value}`;
+      if (document.getElementById("addEnd").value) cmd += ` --end ${document.getElementById("addEnd").value}`;
+      runCLI(cmd);
+    }
+
+    async function runCLIListAll() {
+      runCLI("list-all");
+    }
+
+    async function runCLIListDate() {
+      let date = document.getElementById("listDate").value;
+      if (!date) { alert("Enter a date"); return; }
+      runCLI(`list-date ${date}`);
+    }
+
+    async function runCLIUpdate() {
+      let cmd = `update ${document.getElementById("updateId").value}`;
+      if (document.getElementById("updateTitle").value) cmd += ` --title "${document.getElementById("updateTitle").value}"`;
+      if (document.getElementById("updateStart").value) cmd += ` --start ${document.getElementById("updateStart").value}`;
+      if (document.getElementById("updateEnd").value) cmd += ` --end ${document.getElementById("updateEnd").value}`;
+      runCLI(cmd);
+    }
+
+    async function runCLIDelete() {
+      let id = document.getElementById("deleteId").value;
+      if (!id) { alert("Enter event ID"); return; }
+      runCLI(`delete ${id}`);
+    }
+
+    async function runCLI(command) {
+      const res = await fetch("/run_cli", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({command})
+      });
+      const data = await res.json();
+      document.getElementById("cliResponse").textContent = data.response;
+    }
+  </script>
+</body>
+</html>

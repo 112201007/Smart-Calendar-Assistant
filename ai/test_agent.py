@@ -1,8 +1,8 @@
 # test_agent.py
-from ai.tools import TOOL_MAPPING
 from ai.agent_runner import run_agent
 from db import database as db
 from logs import log_convo
+
 
 def main():
     print("🗓️ Smart Calendar Agent (type 'exit' to quit)")
@@ -17,6 +17,7 @@ def main():
         # Pass input to agent
         response = run_agent(user_input, user=user)
         print(f"Assistant: {response}\n")
+
 
 if __name__ == "__main__":
     db.init_db()                        # ensure calendar.db exists

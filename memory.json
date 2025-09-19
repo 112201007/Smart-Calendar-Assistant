@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": "2025-09-19T15:10:32.168666",
+    "role": "user",
+    "message": "add an event for tomorrow titled SIH meeting at 5pm"
+  },
+  {
+    "timestamp": "2025-09-19T15:10:34.999784",
+    "role": "assistant",
+    "message": "\u274c Agent failed: 403 Generative Language API has not been used in project 664467490957 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=664467490957 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry. [reason: \"SERVICE_DISABLED\"\ndomain: \"googleapis.com\"\nmetadata {\n  key: \"service\"\n  value: \"generativelanguage.googleapis.com\"\n}\nmetadata {\n  key: \"serviceTitle\"\n  value: \"Generative Language API\"\n}\nmetadata {\n  key: \"containerInfo\"\n  value: \"664467490957\"\n}\nmetadata {\n  key: \"consumer\"\n  value: \"projects/664467490957\"\n}\nmetadata {\n  key: \"activationUrl\"\n  value: \"https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=664467490957\"\n}\n, locale: \"en-US\"\nmessage: \"Generative Language API has not been used in project 664467490957 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=664467490957 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.\"\n, links {\n  description: \"Google developers console API activation\"\n  url: \"https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=664467490957\"\n}\n]"
+  }
+]

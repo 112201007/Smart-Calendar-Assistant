@@ -24,17 +24,15 @@
   <!-- CLI Commands -->
   <h2>CLI Commands</h2>
 
-  <!-- Add Event -->
   <div class="form-section">
     <h3>Add Event</h3>
     <input id="addTitle" placeholder="Title (required)">
     <input id="addDate" placeholder="Date (YYYY-MM-DD)">
-    <input id="addStart" placeholder="Start Time (e.g., 10:00)">
-    <input id="addEnd" placeholder="End Time (e.g., 11:00)">
+    <input id="addStart" placeholder="Start Time (HH:MM)">
+    <input id="addEnd" placeholder="End Time (HH:MM)">
     <button onclick="runCLIAdd()">Add Event</button>
   </div>
 
-  <!-- List Events -->
   <div class="form-section">
     <h3>List Events</h3>
     <input id="listDate" placeholder="Date (optional, YYYY-MM-DD)">
@@ -42,20 +40,18 @@
     <button onclick="runCLIListDate()">List by Date</button>
   </div>
 
-  <!-- Update Event -->
   <div class="form-section">
     <h3>Update Event</h3>
-    <input id="updateId" placeholder="Event ID (required)">
-    <input id="updateTitle" placeholder="New Title (optional)">
-    <input id="updateStart" placeholder="New Start Time (optional)">
-    <input id="updateEnd" placeholder="New End Time (optional)">
+    <input id="updateId" placeholder="Event ID">
+    <input id="updateTitle" placeholder="New Title">
+    <input id="updateStart" placeholder="New Start Time">
+    <input id="updateEnd" placeholder="New End Time">
     <button onclick="runCLIUpdate()">Update Event</button>
   </div>
 
-  <!-- Delete Event -->
   <div class="form-section">
     <h3>Delete Event</h3>
-    <input id="deleteId" placeholder="Event ID (required)">
+    <input id="deleteId" placeholder="Event ID">
     <button onclick="runCLIDelete()">Delete Event</button>
   </div>
 
@@ -64,44 +60,45 @@
   <script>
     async function runAI() {
       const query = document.getElementById("aiQuery").value;
-      const res = await fetch("/run_ai", {
+      const res = await fetch("/parse_command", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({query})
+        body: JSON.stringify({text: query})
       });
       const data = await res.json();
-      document.getElementById("aiResponse").textContent = data.response;
+      document.getElementById("aiResponse").textContent =
+          data.message || `Title: ${data.title}, Date: ${data.date}, Start: ${data.start_time}, End: ${data.end_time}`;
     }
 
     async function runCLIAdd() {
-      let cmd = `add "${document.getElementById("addTitle").value}" ${document.getElementById("addDate").value}`;
-      if (document.getElementById("addStart").value) cmd += ` --start ${document.getElementById("addStart").value}`;
-      if (document.getElementById("addEnd").value) cmd += ` --end ${document.getElementById("addEnd").value}`;
+      let cmd = `add_event title='${document.getElementById("addTitle").value}' date='${document.getElementById("addDate").value}'`;
+      if (document.getElementById("addStart").value) cmd += ` start_time='${document.getElementById("addStart").value}'`;
+      if (document.getElementById("addEnd").value) cmd += ` end_time='${document.getElementById("addEnd").value}'`;
       runCLI(cmd);
     }
 
     async function runCLIListAll() {
-      runCLI("list-all");
+      runCLI("list_all_events");
     }
 
     async function runCLIListDate() {
       let date = document.getElementById("listDate").value;
       if (!date) { alert("Enter a date"); return; }
-      runCLI(`list-date ${date}`);
+      runCLI(`list_events_on_date date='${date}'`);
     }
 
     async function runCLIUpdate() {
-      let cmd = `update ${document.getElementById("updateId").value}`;
-      if (document.getElementById("updateTitle").value) cmd += ` --title "${document.getElementById("updateTitle").value}"`;
-      if (document.getElementById("updateStart").value) cmd += ` --start ${document.getElementById("updateStart").value}`;
-      if (document.getElementById("updateEnd").value) cmd += ` --end ${document.getElementById("updateEnd").value}`;
+      let cmd = `update_event event_id='${document.getElementById("updateId").value}'`;
+      if (document.getElementById("updateTitle").value) cmd += ` title='${document.getElementById("updateTitle").value}'`;
+      if (document.getElementById("updateStart").value) cmd += ` start_time='${document.getElementById("updateStart").value}'`;
+      if (document.getElementById("updateEnd").value) cmd += ` end_time='${document.getElementById("updateEnd").value}'`;
       runCLI(cmd);
     }
 
     async function runCLIDelete() {
       let id = document.getElementById("deleteId").value;
       if (!id) { alert("Enter event ID"); return; }
-      runCLI(`delete ${id}`);
+      runCLI(`delete_event event_id='${id}'`);
     }
 
     async function runCLI(command) {

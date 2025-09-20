@@ -64,7 +64,7 @@ def log_cli(user_input: str, output_msg: str):
 @click.argument("date", callback=validate_date)
 @click.option("--start", "start_time", callback=validate_time, default=None, help="Start time HH:MM")
 @click.option("--end", "end_time", callback=validate_time, default=None, help="End time HH:MM")
-@click.option("--user", default="user_shreya", help="Username for multi-user support")
+@click.option("--user", default="user1", help="Username for multi-user support")
 def add(title, date, start_time, end_time, user):
     """Add a new event"""
     user_cmd = f"add {title} {date} --start {start_time} --end {end_time}"
@@ -72,7 +72,6 @@ def add(title, date, start_time, end_time, user):
         if not title.strip():
             raise click.BadParameter("Title cannot be empty")
         validate_time_range(start_time, end_time)
-
         event = db.add_event(title, date, start_time, end_time, user=user)
         output_msg = f"✅ Event added: [ID: {event['id']}] {event['title']} on {event['date']} {event['start_time'] or ''}-{event['end_time'] or ''}"
         click.echo(output_msg)
@@ -87,7 +86,7 @@ def add(title, date, start_time, end_time, user):
 # READ COMMANDS
 # ==========================================================
 @cli.command("list-all")
-@click.option("--user", default="user_shreya", help="Username for multi-user support")
+@click.option("--user", default="user1", help="Username for multi-user support")
 def list_all(user):
     user_cmd = "list-all"
     events = db.list_all_events(user=user)
@@ -106,7 +105,7 @@ def list_all(user):
 
 @cli.command("list-date")
 @click.argument("date", callback=validate_date)
-@click.option("--user", default="user_shreya", help="Username for multi-user support")
+@click.option("--user", default="user1", help="Username for multi-user support")
 def list_on_date(date, user):
     user_cmd = f"list-date {date}"
     events = db.list_events_on_date(date, user=user)
@@ -125,7 +124,7 @@ def list_on_date(date, user):
 
 @cli.command("list-title")
 @click.argument("title")
-@click.option("--user", default="user_shreya", help="Username for multi-user support")
+@click.option("--user", default="user1", help="Username for multi-user support")
 def list_by_title(title, user):
     user_cmd = f"list-title {title}"
     events = db.list_events_by_title(title, user=user)
@@ -144,7 +143,7 @@ def list_by_title(title, user):
 
 @cli.command("list-next")
 @click.argument("n", type=int)
-@click.option("--user", default="user_shreya", help="Username for multi-user support")
+@click.option("--user", default="user1", help="Username for multi-user support")
 def list_next(n, user):
     user_cmd = f"list-next {n}"
     if n <= 0:
@@ -176,7 +175,7 @@ def list_next(n, user):
 @click.option("--date", callback=validate_date, default=None, help="New date (YYYY-MM-DD)")
 @click.option("--start", "start_time", callback=validate_time, default=None, help="New start time (HH:MM)")
 @click.option("--end", "end_time", callback=validate_time, default=None, help="New end time (HH:MM)")
-@click.option("--user", default="user_shreya", help="Username for multi-user support")
+@click.option("--user", default="user1", help="Username for multi-user support")
 def update(event_id, title, date, start_time, end_time, user):
     user_cmd = f"update {event_id} --title {title} --date {date} --start {start_time} --end {end_time}"
     try:
@@ -201,7 +200,7 @@ def update(event_id, title, date, start_time, end_time, user):
 # ==========================================================
 @cli.command()
 @click.argument("event_id", type=int)
-@click.option("--user", default="user_shreya", help="Username for multi-user support")
+@click.option("--user", default="user1", help="Username for multi-user support")
 def delete(event_id, user):
     user_cmd = f"delete {event_id}"
     success = db.delete_event(event_id, user=user)
@@ -232,7 +231,7 @@ def show_memory():
 # ==========================================================
 @cli.command("ai")
 @click.argument("user_input")
-@click.option("--user", default="user_shreya", help="Username for multi-user support")
+@click.option("--user", default="user1", help="Username for multi-user support")
 def ai_command_cli(user_input, user):
     """Send a natural language command to the LangChain AI agent"""
     from ai.agent_runner import run_agent

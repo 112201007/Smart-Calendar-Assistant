@@ -1,9 +1,11 @@
 # database.py
 import sqlite3
 from datetime import datetime, timedelta
+import os
 
-DB_NAME = "calendar.db"
-
+# Absolute path to calendar.db in project root
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_NAME = os.path.join(PROJECT_ROOT, "calendar.db")
 
 def init_db():
     """
@@ -30,7 +32,8 @@ def init_db():
 # -------------------------------
 # ADD EVENT
 # -------------------------------
-def add_event(title: str, date: str, start_time: str = None, end_time: str = None, user: str = "user_shreya") -> dict:
+def add_event(title: str, date: str, start_time: str = None, end_time: str = None, user: str = "user1") -> dict:
+    print("DEBUG: Adding event from ==from databse.py:", DB_NAME)
     """
     Adds a new event. Raises sqlite3.IntegrityError if duplicate.
     """
@@ -62,7 +65,7 @@ def add_event(title: str, date: str, start_time: str = None, end_time: str = Non
 # UPDATE EVENT
 # -------------------------------
 def update_event(event_id: int, title: str = None, date: str = None,
-                 start_time: str = None, end_time: str = None, user: str = "user_shreya") -> bool:
+                 start_time: str = None, end_time: str = None, user: str = "user1") -> bool:
     """
     Updates an event by ID. Checks duplicates before updating.
     Returns True if updated, False if event not found.
@@ -112,7 +115,7 @@ def update_event(event_id: int, title: str = None, date: str = None,
 # -------------------------------
 # DELETE EVENT
 # -------------------------------
-def delete_event(event_id: int, user: str = "user_shreya") -> bool:
+def delete_event(event_id: int, user: str = "user1") -> bool:
     conn = sqlite3.connect(DB_NAME)
     cur = conn.cursor()
     cur.execute("DELETE FROM events WHERE user=? AND id=?", (user, event_id))
@@ -122,7 +125,7 @@ def delete_event(event_id: int, user: str = "user_shreya") -> bool:
     return deleted
 
 
-def delete_event_by_title(title: str, user: str = "user_shreya") -> bool:
+def delete_event_by_title(title: str, user: str = "user1") -> bool:
     """
     Delete all events matching a title for a user.
     Returns True if at least one event was deleted.
@@ -157,7 +160,7 @@ def delete_all_events(user: str = None):
 # -------------------------------
 # LIST ALL, LIST BY DATE/TITLE/NEXT N DAYS
 # -------------------------------
-def list_all_events(user: str = "user_shreya") -> list:
+def list_all_events(user: str = "user1") -> list:
     conn = sqlite3.connect(DB_NAME)
     cur = conn.cursor()
     cur.execute("""
@@ -171,7 +174,7 @@ def list_all_events(user: str = "user_shreya") -> list:
     return [dict(zip(["id", "user", "title", "date", "start_time", "end_time"], r)) for r in rows]
 
 
-def list_events_on_date(date: str, user: str = "user_shreya") -> list:
+def list_events_on_date(date: str, user: str = "user1") -> list:
     conn = sqlite3.connect(DB_NAME)
     cur = conn.cursor()
     cur.execute("""
@@ -185,7 +188,7 @@ def list_events_on_date(date: str, user: str = "user_shreya") -> list:
     return [dict(zip(["id", "user", "title", "date", "start_time", "end_time"], r)) for r in rows]
 
 
-def list_events_by_title(title: str, user: str = "user_shreya") -> list:
+def list_events_by_title(title: str, user: str = "user1") -> list:
     conn = sqlite3.connect(DB_NAME)
     cur = conn.cursor()
     cur.execute("""
@@ -199,7 +202,7 @@ def list_events_by_title(title: str, user: str = "user_shreya") -> list:
     return [dict(zip(["id", "user", "title", "date", "start_time", "end_time"], r)) for r in rows]
 
 
-def list_events_next_n_days(n: int, user: str = "user_shreya") -> list:
+def list_events_next_n_days(n: int, user: str = "user1") -> list:
     """
     Returns all events for the given user within the next `n` days, inclusive.
     Events are ordered by date then start_time.
